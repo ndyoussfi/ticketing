@@ -1,0 +1,35 @@
+# Expiration Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expiration-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expiration
+  template:
+    metadata:
+      labels:
+        app: expiration
+    spec:
+      containers:
+        - name: expiration
+          image: ndyoussfi/expiration
+          env:
+            - name: NATS_CLIENT_ID
+              # Kubernetes uses the pod's name a env variable to the name the client ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: "http://nats-srv:4222"
+            - name: NATS_CLUSTER_ID
+              value: "ticketing"
+            - name: REDIS_HOST
+              value: expiration-redis-srv
+# This service will not be contacted by any other part of our application
+# No network requests will go directly into this expiration service
+# Therefore, Expiration Cluster Ip Service is not needed.
+# All we care about is the expiration pod running the expiration container
+# It will only communicate asynchronously with NATS streaming server.

@@ -1,0 +1,32 @@
+# Client Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-depl
+spec:
+  replicas: 1 # 1 single pod
+  selector:
+    matchLabels:
+      app: client
+  template: # describes how every part created and management by this deployment should behave
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+        - name: client # we only want 1 container with the name client
+          image: ndyoussfi/client # we want it to run this image
+---
+# Client Service to allow requests inside the cluster to get access to this pod
+apiVersion: v1
+kind: Service
+metadata:
+  name: client-srv
+spec:
+  selector:
+    app: client # defined above in the metadata labels app
+  ports:
+    - name: client # not important, just for logging and reporting purposes
+      protocol: TCP
+      port: 3000 # the nextjs client app runs on port 3000 by default
+      targetPort: 3000

@@ -1,0 +1,54 @@
+# NATS Streaming Server Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nats-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nats
+  template:
+    metadata:
+      labels:
+        app: nats
+    spec:
+      containers:
+        - name: nats
+          image: nats-streaming:0.17.0
+          # agrs contains the commandline options. See docs.
+          args: # hbi, hbt and hbf are heart beats
+            # A Heartbeat is small request that nats sends to its subscription clients every number of seconds
+            [
+              "-p", # port to run on
+              "4222", # port number
+              "-m", # monitoring
+              "8222", # port for monitoring
+              "-hbi", # make a heartbeat request to each client
+              "5s", # every 5 seconds
+              "-hbt", # how long a client has to respond to a heartbeat request
+              "5s", # a client has 5 seconds to respond
+              "-hbf", # How many times can a client fail to respond to a heartbeat request
+              "2", # a client can fail to respond 2 times before nats assumes the subscription client is dead
+              "-SD",
+              "-cid", # cluster id
+              "ticketing", # cluster id is: 'ticketing'
+            ]
+---
+# NATS Streaming Server Cluster IP Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats-srv
+spec:
+  selector:
+    app: nats # defined above in the metadata labels app
+  ports:
+    - name: client
+      protocol: TCP
+      port: 4222
+      targetPort: 4222
+    - name: monitoring
+      protocol: TCP
+      port: 8222
+      targetPort: 8222

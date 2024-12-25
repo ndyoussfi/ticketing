@@ -1,0 +1,32 @@
+# Auth Mongo Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-mongo-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-mongo
+  template:
+    metadata:
+      labels:
+        app: auth-mongo
+    spec:
+      containers:
+        - name: auth-mongo
+          image: mongo
+---
+# Auth Mongo Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-mongo-srv
+spec:
+  selector:
+    app: auth-mongo # defined above in the metadata labels app
+  ports:
+    - name: db # the name here is just for logging purposes
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

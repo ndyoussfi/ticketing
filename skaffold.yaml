@@ -1,0 +1,60 @@
+# Note: here is where we have to setup file syncing by listing out our projects as build artifacts
+
+apiVersion: skaffold/v2alpha3
+kind: Config
+deploy: # List all the config files we want to load into our k8s cluster
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+build:
+  local:
+    push: false # do not push image to dockerhub
+  artifacts: # everything that will be built
+    - image: ndyoussfi/auth
+      context: auth # folder that contains the code for this image
+      docker:
+        dockerfile: Dockerfile
+      sync: # handles any file changes inside auth
+        manual: # manual configuration
+          - src: "src/**/*.ts" # the files that skaffold needs to watch
+            dest: . # Sync destination would be in the corresponding path on our running container
+    - image: ndyoussfi/client
+      context: client # folder that contains the code for this image
+      docker:
+        dockerfile: Dockerfile
+      sync: # handles any file changes inside client
+        manual: # manual configuration
+          - src: "**/*.js" # the files that skaffold needs to watch
+            dest: . # Sync destination would be in the corresponding path on our running container
+    - image: ndyoussfi/tickets
+      context: tickets # folder that contains the code for this image
+      docker:
+        dockerfile: Dockerfile
+      sync: # handles any file changes inside tickets
+        manual: # manual configuration
+          - src: "src/**/*.ts" # the files that skaffold needs to watch
+            dest: . # Sync destination would be in the corresponding path on our running container
+    - image: ndyoussfi/payments
+      context: payments # folder that contains the code for this image
+      docker:
+        dockerfile: Dockerfile
+      sync: # handles any file changes inside orders
+        manual: # manual configuration
+          - src: "src/**/*.ts" # the files that skaffold needs to watch
+            dest: . # Sync destination would be in the corresponding path on our running container
+    - image: ndyoussfi/orders
+      context: orders # folder that contains the code for this image
+      docker:
+        dockerfile: Dockerfile
+      sync: # handles any file changes inside orders
+        manual: # manual configuration
+          - src: "src/**/*.ts" # the files that skaffold needs to watch
+            dest: . # Sync destination would be in the corresponding path on our running container
+    - image: ndyoussfi/expiration
+      context: expiration # folder that contains the code for this image
+      docker:
+        dockerfile: Dockerfile
+      sync: # handles any file changes inside orders
+        manual: # manual configuration
+          - src: "src/**/*.ts" # the files that skaffold needs to watch
+            dest: . # Sync destination would be in the corresponding path on our running container
