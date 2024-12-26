@@ -1,0 +1,54 @@
+# Here we setup the paths that users can visit and have all requests that go
+# to some particular path routing off to the corresponding service
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-service
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # Expect some paths from the ones below to have regex
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+    # A pretend domain name redirecting localhost to ticketing inside /etc/hosts
+    - host: ticketing.dev
+      http:
+        paths: # here we list an array of different paths
+          # whenever a request comes in to ingress nginx, its going to attempt to match
+          # the path of that incoming request to the paths listed here IN ORDER.
+          - path: /api/users/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: auth-srv
+                port:
+                  number: 3000
+          - path: /api/payments/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: payments-srv
+                port:
+                  number: 3000
+          - path: /api/tickets/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: tickets-srv
+                port:
+                  number: 3000
+          - path: /api/orders/?(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: orders-srv
+                port:
+                  number: 3000
+          - path: /?(.*) # This client service path is a catch all, SHOULD BE at the bottom.
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: client-srv
+                port:
+                  number: 3000

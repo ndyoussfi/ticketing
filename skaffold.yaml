@@ -6,6 +6,7 @@ deploy: # List all the config files we want to load into our k8s cluster
   kubectl:
     manifests:
       - ./infra/k8s/*
+      - ./infra/k8s-dev/*
 build:
   local:
     push: false # do not push image to dockerhub
