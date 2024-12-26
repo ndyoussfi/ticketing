@@ -11,8 +11,8 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
-    # A pretend domain name redirecting localhost to ticketing inside /etc/hosts
-    - host: ticketing.dev
+    # A domain name redirecting to ticketing
+    - host: www.hartibusiness.com
       http:
         paths: # here we list an array of different paths
           # whenever a request comes in to ingress nginx, its going to attempt to match
